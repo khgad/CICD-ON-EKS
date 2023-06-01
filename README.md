@@ -36,6 +36,12 @@ This project aims to create a simple Node.js application with a CI/CD pipeline. 
    terraform apply
    ```
 
+- terrafrom contains 4 moduels:
+    - **network** : to generate `VPC`, `subnets`, `routetables`, `internet gateway`, `nat gateway``  
+    - **security** : create `tls private key` to use it in ssh connection
+    - **instances** : create `bastion host` with its `security group`
+    - **eks** : create `EKS` with it `AIM-Role`, `node group` and so on.
+
 ### 2. Configuration of Public EC2 Instance
 1. After the Terraform provisioning is complete, Ansible will automatically configure the public EC2 instance.
 
