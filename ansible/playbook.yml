@@ -106,8 +106,65 @@
     #   debug:
     #     msg: "Jenkins admin password: {{ jenkins_admin_password.stdout }}"
 
-    - name: create jenkins user
+    
+
+
+
+
+    # - name: Create /etc/apt/keyrings directory
+    #   file:
+    #     path: /etc/apt/keyrings
+    #     state: directory
+    #     mode: '0755'
+      
+    # - name: add GPG key
+    #   apt_key:
+    #     url: https://download.docker.com/linux/ubuntu/gpg
+    #     state: present
+
+    # - name: add docker repo
+    #   apt_repository:
+    #     repo: deb https://download.docker.com/linux/ubuntu bionic stable
+    #     state: present
+
+    # - name: install docker
+    #   apt:
+    #     name: "{{item}}"
+    #     state: latest
+    #     update_cache: yes
+    #   loop:
+    #     - docker-ce
+    #     - docker-ce-cli
+    #     - containerd.io
+
+    # - name: make sure docker is active
+    #   service:
+    #     name: docker
+    #     state: started
+    #     enabled: yes
+
+    - name: add user to docker group
       user:
-        name: jenkins
-        shell: /bin/bash
-        home: /home/jenkins
+        name: ubuntu
+        groups: docker
+        append: yes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# - name: create jenkins user
+    #   user:
+    #     name: jenkins
+    #     shell: /bin/bash
+    #     home: /home/jenkins
