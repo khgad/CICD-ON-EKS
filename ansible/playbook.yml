@@ -4,150 +4,137 @@
   vars_files:
   - aws_credentials.yml
   tasks:
-    # - name: Update apt cache
-    #   apt:
-    #     update_cache: yes
+    # ------------------- install some packages -------------------#
+    - name: Update apt cache
+      apt:
+        update_cache: yes
 
-    # - name: Install required packages
-    #   apt:
-    #     name:
-    #       - ca-certificates
-    #       - curl
-    #       - apt-transport-https
-    #       - openssh-server
-    #       - unzip
-    #       - openjdk-11-jdk
-    #     state: present
+    - name: Install required packages
+      apt:
+        name:
+          - ca-certificates
+          - curl
+          - apt-transport-https
+          - openssh-server
+          - unzip
+          - openjdk-11-jdk
+          - python3-setuptools
+          - python3-distutils
+        state: present
 
-    # - name: Download AWS CLI ZIP file
-    #   command: "curl -o awscliv2.zip https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+    - name: Install pip
+      become: true
+      shell: curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
 
-    # - name: Unzip AWS CLI ZIP file
-    #   command: "unzip awscliv2.zip"
+    - name: Install required Python library (kubernetes)
+      pip:
+        name: kubernetes
+        state: present
 
-    # - name: Install AWS CLI
-    #   command: "sudo ./aws/install"
-
-    # - name: Install Kubectl
-    #   shell: |
-    #     curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-    #     sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-    #     # chmod +x kubectl
-    #     # sudo mv kubectl /usr/local/bin/
-
-    # - name: Configure AWS credentials
-    #   become: false
-    #   shell: |
-    #     aws configure set aws_access_key_id "{{ aws_access_key_id }}"
-    #     aws configure set aws_secret_access_key "{{ aws_secret_access_key }}"
-
-    # - name: Configure Kubeconfig
-    #   become: false
-    #   shell: aws eks update-kubeconfig --name "{{ cluster_name }}" --region "{{ cluster_region }}"
-
-    # - name: Copy Jenkins manifests files
-    #   copy:
-    #     src: ../jenkins-manifests
-    #     dest: /tmp
-
-
-    # - name: Install required packages
-    #   apt:
-    #     name: "{{ item }}"
-    #     state: present
-    #   loop:
-    #     - python3-setuptools
-    #     - python3-distutils
-
-    # - name: Install pip
-    #   become: true
-    #   shell: curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
-
-    # - name: Install pip package manager
-    #   raw: |
-    #     curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-    #     python3 get-pip.py
-    #     rm get-pip.py
-
-    # - name: Install required Python library (kubernetes)
-    #   pip:
-    #     name: kubernetes
-    #     state: present
-
-    # - name: Create a new namespace for jenkins
-    #   become: false
-    #   k8s:
-    #     src: /tmp/jenkins-manifests/namespace.yml
-    #     state: present
-
-    # - name: Create jenkins service account
-    #   become: false
-    #   k8s:
-    #     src: /tmp/jenkins-manifests/service-account.yml
-    #     state: present
-
-    # - name: Create jenkins service
-    #   become: false
-    #   k8s:
-    #     src: /tmp/jenkins-manifests/service.yml
-    #     state: present
-    
-    # - name: Create jenkins deployment
-    #   become: false
-    #   k8s:
-    #     src: /tmp/jenkins-manifests/deployement.yml
-    #     state: present
-
-    # - name: Get Jenkins admin password
-    #   shell: kubectl exec -it deployment/jenkins -n jenkins -- cat /var/jenkins_home/secrets/initialAdminPassword
-    #   register: jenkins_admin_password
-
-    # - name: Print Jenkins admin password
-    #   debug:
-    #     msg: "Jenkins admin password: {{ jenkins_admin_password.stdout }}"
-
-    
-
-
-
-
-    # - name: Create /etc/apt/keyrings directory
-    #   file:
-    #     path: /etc/apt/keyrings
-    #     state: directory
-    #     mode: '0755'
+    # ------------------- install docker -------------------#
+    - name: Create /etc/apt/keyrings directory
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
       
-    # - name: add GPG key
-    #   apt_key:
-    #     url: https://download.docker.com/linux/ubuntu/gpg
-    #     state: present
+    - name: add GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
 
-    # - name: add docker repo
-    #   apt_repository:
-    #     repo: deb https://download.docker.com/linux/ubuntu bionic stable
-    #     state: present
+    - name: add docker repo
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu bionic stable
+        state: present
 
-    # - name: install docker
-    #   apt:
-    #     name: "{{item}}"
-    #     state: latest
-    #     update_cache: yes
-    #   loop:
-    #     - docker-ce
-    #     - docker-ce-cli
-    #     - containerd.io
+    - name: install docker
+      apt:
+        name: "{{item}}"
+        state: latest
+        update_cache: yes
+      loop:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
 
-    # - name: make sure docker is active
-    #   service:
-    #     name: docker
-    #     state: started
-    #     enabled: yes
-
-    - name: add user to docker group
+    - name: make sure docker is active
+      service:
+        name: docker
+        state: started
+        enabled: yes
+    
+    - name: add ubuntu user to docker group
       user:
         name: ubuntu
         groups: docker
         append: yes
+
+    # ------------------- install aws cli -------------------#
+    - name: Download AWS CLI ZIP file
+      command: "curl -o awscliv2.zip https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+
+    - name: Unzip AWS CLI ZIP file
+      command: "unzip awscliv2.zip"
+
+    - name: Install AWS CLI
+      command: "sudo ./aws/install"
+
+    # ------------------- install kubectl -------------------#
+    - name: Install Kubectl
+      shell: |
+        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+        # chmod +x kubectl
+        # sudo mv kubectl /usr/local/bin/
+
+    - name: Configure AWS credentials
+      become: false
+      shell: |
+        aws configure set aws_access_key_id "{{ aws_access_key_id }}"
+        aws configure set aws_secret_access_key "{{ aws_secret_access_key }}"
+
+    - name: Configure Kubeconfig
+      become: false
+      shell: aws eks update-kubeconfig --name "{{ cluster_name }}" --region "{{ cluster_region }}"
+
+    # ------------------- deploy jenkins on eks -------------------#
+    - name: Copy Jenkins manifests files
+      copy:
+        src: ../jenkins-manifests
+        dest: /tmp
+
+    - name: Create a new namespace for jenkins
+      become: false
+      k8s:
+        src: /tmp/jenkins-manifests/namespace.yml
+        state: present
+
+    - name: Create jenkins service account
+      become: false
+      k8s:
+        src: /tmp/jenkins-manifests/service-account.yml
+        state: present
+
+    - name: Create jenkins service
+      become: false
+      k8s:
+        src: /tmp/jenkins-manifests/service.yml
+        state: present
+    
+    - name: Create jenkins deployment
+      become: false
+      k8s:
+        src: /tmp/jenkins-manifests/deployement.yml
+        state: present
+
+    - name: Get Jenkins admin password
+      shell: kubectl exec -it deployment/jenkins -n jenkins -- cat /var/jenkins_home/secrets/initialAdminPassword
+      register: jenkins_admin_password
+
+    - name: Print Jenkins admin password
+      debug:
+        msg: "Jenkins admin password: {{ jenkins_admin_password.stdout }}"
 
 
 
