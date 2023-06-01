@@ -30,10 +30,10 @@ module "eks" {
   bastion_sg_id = module.instances.allow_ssh_http_sg_id
 }
 
-# resource "null_resource" "run_ansible" {
-#   provisioner "local-exec" {
-#     command = "ansible-playbook playbook.yml --extra-vars 'cluster_name=${module.eks.eks_name} cluster_region=us-east-1'"
-#     working_dir = "../ansible"
-#   }
-#   depends_on = [ module.network, module.security, module.instances, module.eks ]
-# }
+resource "null_resource" "run_ansible" {
+  provisioner "local-exec" {
+    command = "ansible-playbook playbook.yml --extra-vars 'cluster_name=${module.eks.eks_name} cluster_region=us-east-1'"
+    working_dir = "../ansible"
+  }
+  depends_on = [ module.network, module.security, module.instances, module.eks ]
+}

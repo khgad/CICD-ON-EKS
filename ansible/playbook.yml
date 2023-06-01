@@ -1,4 +1,4 @@
-- name: configure bastion host
+- name: configure bastion host to deploy jenkins on eks and to be slave
   hosts: all
   gather_facts: false
   vars_files:
@@ -121,6 +121,7 @@
       k8s:
         src: /tmp/jenkins-manifests/service.yml
         state: present
+      register: service
     
     - name: Create jenkins deployment
       become: false
@@ -129,6 +130,7 @@
         state: present
 
     - name: Get Jenkins admin password
+      become: false
       shell: kubectl exec -it deployment/jenkins -n jenkins -- cat /var/jenkins_home/secrets/initialAdminPassword
       register: jenkins_admin_password
 
@@ -136,22 +138,6 @@
       debug:
         msg: "Jenkins admin password: {{ jenkins_admin_password.stdout }}"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# - name: create jenkins user
-    #   user:
-    #     name: jenkins
-    #     shell: /bin/bash
-    #     home: /home/jenkins
+    - name: LoadBalancer url
+      debug:
+        msg: "Jenkins URL: {{ service.result.status.loadBalancer.ingress[0].hostname }}"
