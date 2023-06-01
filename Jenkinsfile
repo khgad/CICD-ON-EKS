@@ -22,12 +22,6 @@ pipeline {
         }
         stage('CD'){
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                    sh """
-                    sudo docker login -u ${USER} -p ${PASS}
-                    sudo docker pull khaledgad/simple-nodejs-app
-                    """
-                }
                 sh """
                 kubectl apply -f app-manifests/deployment.yml
                 kubectl apply -f app-manifests/service.yml
