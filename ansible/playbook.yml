@@ -98,6 +98,14 @@
       become: false
       shell: aws eks update-kubeconfig --name "{{ cluster_name }}" --region "{{ cluster_region }}"
 
+    # ------------------- add jenkins directory to host slave files -------------------#
+    - name: Create directory for slave
+      become: false
+      file:
+        path: /home/ubuntu/jenkins
+        state: directory
+        mode: '0755'
+
     # ------------------- deploy jenkins on eks -------------------#
     - name: Copy Jenkins manifests files
       copy:
@@ -129,15 +137,16 @@
         src: /tmp/jenkins-manifests/deployement.yml
         state: present
 
+    # ------------------- print url and password to access jenkins -------------------#
+    - name: LoadBalancer url
+      debug:
+        msg: "Jenkins URL: {{ service.result.status.loadBalancer.ingress[0].hostname }}"
+
     - name: Get Jenkins admin password
       become: false
       shell: kubectl exec -it deployment/jenkins -n jenkins -- cat /var/jenkins_home/secrets/initialAdminPassword
       register: jenkins_admin_password
 
-    - name: Print Jenkins admin password
+    - name: Print Jenkins initial admin password
       debug:
         msg: "Jenkins admin password: {{ jenkins_admin_password.stdout }}"
-
-    - name: LoadBalancer url
-      debug:
-        msg: "Jenkins URL: {{ service.result.status.loadBalancer.ingress[0].hostname }}"

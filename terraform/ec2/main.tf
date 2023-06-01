@@ -18,7 +18,7 @@ resource "aws_instance" "public_ec2" {
   }
 
   count = length(var.public_subnets_id)
-
+  
   # depends_on = var.dependances
 }
 
