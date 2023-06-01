@@ -1,0 +1,7 @@
+terraform/.terraform*
+terraform/terraform.tfstate*
+
+ansible/key.pem
+ansible/aws_credentials.yml
+
+.vscode/
