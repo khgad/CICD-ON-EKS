@@ -1,12 +1,12 @@
 # VOIS-CICD-ON-EKS
 
 ## Overview
-This project aims to create a simple Node.js application with a CI/CD pipeline. It utilizes infrastructure provisioning using Terraform, Ansible for configuration management, and Jenkins for continuous integration and deployment (CI/CD). The project includes the following components:
+This project aims to create a [simple Node.js application](https://github.com/khgad/simple-nodejs-app) with a CI/CD pipeline. It utilizes infrastructure provisioning using Terraform, Ansible for configuration management, and Jenkins for continuous integration and deployment (CI/CD). The project includes the following components:
 
 - Infrastructure: VPC, subnets, route tables, security groups, EC2 instances, and EKS cluster.
 - Ansible: Automation of configuration for the public EC2 instance.
 - Jenkins: Deployment of Jenkins on the EKS cluster using manifests and Ansible.
-- Node.js App: A sample Node.js application that will be built and deployed using the CI/CD pipeline.
+- [Node.js App](https://github.com/khgad/simple-nodejs-app): A sample Node.js application that will be built and deployed using the CI/CD pipeline.
 
 <div align="center">
 <img src="screenshots/project-overview.png">
@@ -92,7 +92,7 @@ This project aims to create a simple Node.js application with a CI/CD pipeline. 
 ### 5. Configuration of CI/CD Pipeline
 1. In the Jenkins interface, create a new pipeline job.
 
-2. Configure the pipeline to connect to your version control system (e.g., Git) and specify the repository URL for your Node.js application.
+2. Configure the pipeline to connect to your version control system (e.g., Git) and specify the repository URL for your [Node.js application](https://github.com/khgad/simple-nodejs-app).
 
 <div align="center">
 <img src="screenshots/pipeline-configuration.png">
