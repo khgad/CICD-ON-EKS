@@ -18,7 +18,7 @@ This project aims to create a simple Node.js application with a CI/CD pipeline. 
 ### 1. Infrastructure Provisioning
 1. Clone the repository:
    ```
-   git clone https://github.com/khgad/CICD-ON-EKS.git
+   git clone https://github.com/khgad/VOIS-CICD-ON-EKS.git
    ```
 
 2. Navigate to the infrastructure directory:
